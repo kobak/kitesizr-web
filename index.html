@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KiteSizR - Atmospheric Navigator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00288e;
+            --primary-container: #1e40af;
+            --secondary: #006689;
+            --secondary-container: #5bcaff;
+            --surface: #f9f9ff;
+            --surface-container-low: #f1f3ff;
+            --surface-container: #e8eaf6;
+            --surface-container-high: #e0e8ff;
+            --surface-container-highest: #dbe2f9;
+            --surface-bright: #ffffff;
+            --on-surface: #141b2c;
+            --on-surface-variant: #444653;
+            --outline: #757684;
+            --outline-variant: #c4c5d5;
+            --on-primary: #ffffff;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --surface-tint: #3755c3;
+            --secondary-fixed: #c3e8ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--surface);
+            color: var(--on-surface);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--surface);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .logo-text {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            background: var(--surface-container-high);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .lang-btn {
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--outline);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: var(--surface-bright);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 40, 142, 0.1);
+        }
+
+        /* Hero Card - Glassmorphism */
+        .hero-card {
+            margin: 0 20px 20px;
+            border-radius: 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+            padding: 28px;
+            color: var(--on-primary);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(20, 27, 44, 0.15);
+        }
+
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .location-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+            max-width: 70%;
+        }
+
+        .location-badge:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .location-icon {
+            font-size: 16px;
+        }
+
+        .location-text {
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .refresh-btn.spinning .material-symbols-outlined {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Wind Display */
+        .wind-display {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .wind-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .wind-value-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .wind-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .wind-unit {
+            font-size: 20px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .gusts-text {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+
+        .manual-wind-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Kite Size Display - Asymmetric */
+        .kite-display {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .kite-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+
+        .kite-value-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .kite-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .kite-unit-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .kite-unit {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .kite-type-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .wind-warning {
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .wind-warning.too-little {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .wind-warning.too-much {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Hero Footer */
+        .hero-footer {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-stat {
+            text-align: center;
+        }
+
+        .footer-stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+
+        .footer-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .direction-arrow {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        /* Controls Card */
+        .controls-card {
+            background: var(--surface-container-low);
+            border-radius: 24px;
+            padding: 24px;
+            margin: 0 20px 20px;
+        }
+
+        .slider-section {
+            margin-bottom: 28px;
+        }
+
+        .slider-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-value-row {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .slider-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .slider-unit {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--outline);
+        }
+
+        /* Custom Slider */
+        .slider-container {
+            position: relative;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .slider-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: var(--surface-container-high);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .slider-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--secondary-container) 100%);
+            border-radius: 6px;
+            transition: width 0.1s;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 0 0 4px var(--secondary-fixed), 0 4px 12px rgba(0, 40, 142, 0.3);
+            transform: translateX(-50%);
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .slider-thumb:active {
+            cursor: grabbing;
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .slider-minmax {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--outline);
+        }
+
+        /* Kite Type Toggle */
+        .kite-type-container {
+            margin-top: 8px;
+        }
+
+        .kite-type-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .kite-type-toggle {
+            display: flex;
+            gap: 8px;
+        }
+
+        .kite-type-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--surface-container-high);
+            color: var(--on-surface-variant);
+            white-space: nowrap;
+        }
+
+        .kite-type-btn.active {
+            background: var(--primary);
+            color: var(--on-primary);
+        }
+
+        /* GPS Button */
+        .gps-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-container) 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px;
+            margin: 0 20px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 102, 137, 0.25);
+            transition: all 0.2s;
+        }
+
+        .gps-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 102, 137, 0.35);
+        }
+
+        .gps-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Spots Button */
+        .spots-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface-container);
+            border-radius: 20px;
+            padding: 18px 20px;
+            margin: 0 20px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .spots-button:hover {
+            background: var(--surface-container-high);
+        }
+
+        .spots-button-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spots-icon {
+            font-size: 24px;
+        }
+
+        .spots-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .spots-arrow {
+            font-size: 20px;
+            color: var(--outline);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface-bright);
+            border-radius: 32px 32px 0 0;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: var(--surface-container-low);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Spots List */
+        .spots-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .spot-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--surface-container-low);
+            padding: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .spot-item:hover {
+            background: var(--surface-container);
+        }
+
+        .spot-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .spot-info {
+            flex: 1;
+        }
+
+        .spot-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .spot-coords {
+            font-size: 12px;
+            color: var(--outline);
+        }
+
+        .spot-arrow {
+            color: var(--outline);
+        }
+
+        .add-spot-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Form Inputs */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input {
+            width: 100%;
+            padding: 16px;
+            background: var(--surface-container-low);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--on-surface);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            border-color: var(--primary);
+            background: var(--surface-bright);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .row .input-group {
+            flex: 1;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 16px;
+            background: var(--surface-container-low);
+            border: none;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--outline);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            flex: 2;
+            padding: 16px;
+            background: var(--primary);
+            border: none;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Map Container */
+        .map-container {
+            height: 200px;
+            background: var(--surface-container);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--outline);
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder {
+            text-align: center;
+        }
+
+        .map-instruction {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* Manual Wind Modal */
+        .wind-input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .wind-input-row .input-group {
+            flex: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .hero-card {
+                margin: 0 16px 16px;
+                padding: 20px;
+            }
+
+            .kite-value {
+                font-size: 56px;
+            }
+
+            .wind-value {
+                font-size: 48px;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        /* Error Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--on-surface);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <span class="logo-icon">🪁</span>
+                <span class="logo-text">KiteSizR</span>
+            </div>
+            <div class="lang-toggle">
+                <button class="lang-btn" data-lang="hu">HU</button>
+                <button class="lang-btn active" data-lang="en">EN</button>
+            </div>
+        </header>
+
+        <!-- Hero Card -->
+        <div class="hero-card">
+            <div class="hero-header">
+                <div class="location-badge" id="locationBadge">
+                    <span class="location-icon">📍</span>
+                    <span class="location-text" id="locationText">Select Spot</span>
+                </div>
+                <button class="refresh-btn" id="refreshBtn" title="Refresh wind data">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+            </div>
+
+            <div class="wind-display">
+                <div class="wind-label">Current Wind</div>
+                <div class="wind-value-row">
+                    <span class="wind-value" id="windValue">--</span>
+                    <span class="wind-unit">knots</span>
+                </div>
+                <div class="gusts-text" id="gustsText" style="display: none;"></div>
+            </div>
+
+            <div class="kite-display" id="kiteDisplay">
+                <div class="kite-label">Recommended Kite</div>
+                <div class="kite-value-row" id="kiteValueRow">
+                    <span class="kite-value" id="kiteValue">--</span>
+                    <div class="kite-unit-col">
+                        <span class="kite-unit">m²</span>
+                        <span class="kite-type-badge" id="kiteTypeBadge">LEI</span>
+                    </div>
+                </div>
+                <div class="wind-warning too-little" id="windWarning" style="display: none;"></div>
+            </div>
+
+            <div class="hero-footer">
+                <div class="footer-stat">
+                    <div class="footer-stat-label">Direction</div>
+                    <div class="direction-arrow" id="directionArrow">--</div>
+                    <div class="footer-stat-value" id="directionValue">--°</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="footer-stat-label">Source</div>
+                    <div class="footer-stat-value" id="sourceValue">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPS Button -->
+        <button class="gps-button" id="gpsButton">
+            <span class="material-symbols-outlined">my_location</span>
+            <span>Use Current Location</span>
+        </button>
+
+        <!-- Controls Card -->
+        <div class="controls-card">
+            <!-- Weight Slider -->
+            <div class="slider-section">
+                <div class="slider-header">
+                    <span class="slider-label">Weight</span>
+                    <div class="slider-value-row">
+                        <span class="slider-value" id="weightValue">75</span>
+                        <span class="slider-unit">KG</span>
+                    </div>
+                </div>
+                <div class="slider-container" id="weightSlider">
+                    <div class="slider-track">
+                        <div class="slider-fill" id="weightFill" style="width: 50%"></div>
+                    </div>
+                    <div class="slider-thumb" id="weightThumb" style="left: 50%"></div>
+                </div>
+                <div class="slider-labels">
+                    <span class="slider-minmax">30</span>
+                    <span class="slider-minmax">120</span>
+                </div>
+            </div>
+
+            <!-- Wind Slider -->
+            <div class="slider-section">
+                <div class="slider-header">
+                    <span class="slider-label">Wind Speed</span>
+                    <div class="slider-value-row">
+                        <span class="slider-value" id="windSliderValue">15</span>
+                        <span class="slider-unit">KNOTS</span>
+                    </div>
+                </div>
+                <div class="slider-container" id="windSlider">
+                    <div class="slider-track">
+                        <div class="slider-fill" id="windFill" style="width: 37.5%"></div>
+                    </div>
+                    <div class="slider-thumb" id="windThumb" style="left: 37.5%"></div>
+                </div>
+                <div class="slider-labels">
+                    <span class="slider-minmax">0</span>
+                    <span class="slider-minmax">40</span>
+                </div>
+            </div>
+
+            <!-- Kite Type -->
+            <div class="kite-type-container">
+                <div class="kite-type-label" data-i18n="kiteType">Kite Type</div>
+                <div class="kite-type-toggle" id="kiteTypeToggle">
+                    <button class="kite-type-btn active" data-kite="LEI">LEI</button>
+                    <button class="kite-type-btn" data-kite="FOIL">Foil</button>
+                </div>
+            </div>
+
+            <!-- Riding Style -->
+            <div class="kite-type-container" style="margin-top: 16px;">
+                <div class="kite-type-label" data-i18n="ridingStyle">Riding Style</div>
+                <div class="kite-type-toggle" id="ridingStyleToggle">
+                    <button class="kite-type-btn active" data-style="AVERAGE">Average</button>
+                    <button class="kite-type-btn" data-style="PRO">Pro</button>
+                </div>
+                <div class="kite-type-toggle" style="margin-top: 8px;">
+                    <button class="kite-type-btn" data-style="BEGINNER">Beginner</button>
+                    <button class="kite-type-btn" data-style="SURF">Surf</button>
+                    <button class="kite-type-btn" data-style="HYDROFOIL">Hydrofoil</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spots Button -->
+        <div class="spots-button" id="spotsButton">
+            <div class="spots-button-left">
+                <span class="spots-icon">📍</span>
+                <span class="spots-text">Manage Spots</span>
+            </div>
+            <span class="spots-arrow">→</span>
+        </div>
+    </div>
+
+    <!-- Spots Modal -->
+    <div class="modal-overlay" id="spotsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Select Spot</h2>
+                <button class="modal-close" id="closeSpotsModal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="spots-list" id="spotsList"></div>
+            <button class="add-spot-btn" id="addSpotBtn">
+                <span class="material-symbols-outlined">add</span>
+                Add New Spot
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Spot Modal -->
+    <div class="modal-overlay" id="addSpotModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Spot</h2>
+                <button class="modal-close" id="closeAddSpotModal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <div class="map-container" id="mapContainer">
+                <div class="map-placeholder">
+                    <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.3;">map</span>
+                    <div class="map-instruction">Click to set location or enter coordinates</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Spot Name</label>
+                <input type="text" class="input" id="spotNameInput" placeholder="e.g., My Favorite Spot">
+            </div>
+
+            <div class="row">
+                <div class="input-group">
+                    <label class="input-label">Latitude</label>
+                    <input type="number" class="input" id="latInput" placeholder="46.8234" step="0.0001">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Longitude</label>
+                    <input type="number" class="input" id="lonInput" placeholder="17.8234" step="0.0001">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="cancelAddSpot">Cancel</button>
+                <button class="btn-primary" id="saveSpot">Save Spot</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Wind Modal -->
+    <div class="modal-overlay" id="manualWindModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Manual Wind Input</h2>
+                <button class="modal-close" id="closeManualWindModal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="wind-input-row">
+                <div class="input-group">
+                    <label class="input-label">Wind Speed (knots)</label>
+                    <input type="number" class="input" id="manualSpeedInput" placeholder="18" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Gusts (optional)</label>
+                    <input type="number" class="input" id="manualGustsInput" placeholder="22" step="0.1">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="cancelManualWind">Cancel</button>
+                <button class="btn-primary" id="saveManualWind">Set Wind</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Translations
+        const translations = {
+            en: {
+                selectSpot: 'Select Spot',
+                currentWind: 'Current Wind',
+                gusts: 'Gusts',
+                recommendedKite: 'Recommended Kite',
+                direction: 'Direction',
+                manual: '📝 Manual',
+                knots: 'knots',
+                weight: 'Weight',
+                windSpeed: 'Wind Speed',
+                addSpot: 'Add New Spot',
+                spotName: 'Spot Name',
+                latitude: 'Latitude',
+                longitude: 'Longitude',
+                cancel: 'Cancel',
+                save: 'Save',
+                manageSpots: 'Manage Spots',
+                useGps: 'Use Current Location',
+                tooLittleWind: 'Too little wind',
+                tooMuchWind: 'Too much wind',
+                kiteType: 'Kite Type',
+                ridingStyle: 'Riding Style',
+                lei: 'LEI',
+                foil: 'Foil',
+                pro: 'Pro',
+                average: 'Average',
+                beginner: 'Beginner',
+                surf: 'Surf',
+                hydrofoil: 'Hydrofoil'
+            },
+            hu: {
+                selectSpot: 'Válassz helyszínt',
+                currentWind: 'Aktuális szél',
+                gusts: 'Lökések',
+                recommendedKite: 'Ajánlott ernyő',
+                direction: 'Irány',
+                manual: '📝 Kézi beállítás',
+                knots: 'csomó',
+                weight: 'Testsúly',
+                windSpeed: 'Szélsebesség',
+                addSpot: 'Új helyszín',
+                spotName: 'Helyszín neve',
+                latitude: 'Szélesség',
+                longitude: 'Hosszúság',
+                cancel: 'Mégse',
+                save: 'Mentés',
+                manageSpots: 'Helyszínek kezelése',
+                useGps: 'Aktuális helyzet',
+                tooLittleWind: 'Kevés a szél',
+                tooMuchWind: 'Túl erős szél',
+                kiteType: 'Ernyő típusa',
+                ridingStyle: 'Vezetési stílus',
+                lei: 'LEI',
+                foil: 'Fólia',
+                pro: 'Profi',
+                average: 'Átlagos',
+                beginner: 'Kezdő',
+                surf: 'Szörf',
+                hydrofoil: 'Hidrofoil'
+            }
+        };
+
+        // Default spots
+        const defaultSpots = [
+            { id: '1', name: 'Balatonszárszó', latitude: 46.8234, longitude: 17.8234 },
+            { id: '2', name: 'Siófok Sóstó', latitude: 46.9012, longitude: 18.0567 },
+            { id: '3', name: 'Agárd', latitude: 47.1234, longitude: 18.5678 },
+            { id: '4', name: 'Fonyód', latitude: 46.7345, longitude: 17.5678 },
+            { id: '5', name: 'Fenyves', latitude: 46.6789, longitude: 17.4567 },
+        ];
+
+        // State
+        let state = {
+            lang: 'en',
+            weight: 75,
+            windSpeed: 15,
+            kiteType: 'LEI',        // LEI or FOIL
+            ridingStyle: 'AVERAGE', // PRO, AVERAGE, BEGINNER, SURF, HYDROFOIL
+            selectedSpot: null,
+            spots: [...defaultSpots],
+            windData: null,
+            isLoading: false,
+            isManualWind: false
+        };
+
+        // DOM Elements
+        const elements = {
+            langBtns: document.querySelectorAll('.lang-btn'),
+            locationBadge: document.getElementById('locationBadge'),
+            locationText: document.getElementById('locationText'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            windValue: document.getElementById('windValue'),
+            gustsText: document.getElementById('gustsText'),
+            kiteValue: document.getElementById('kiteValue'),
+            kiteTypeBadge: document.getElementById('kiteTypeBadge'),
+            kiteValueRow: document.getElementById('kiteValueRow'),
+            windWarning: document.getElementById('windWarning'),
+            directionArrow: document.getElementById('directionArrow'),
+            directionValue: document.getElementById('directionValue'),
+            sourceValue: document.getElementById('sourceValue'),
+            gpsButton: document.getElementById('gpsButton'),
+            weightValue: document.getElementById('weightValue'),
+            weightSlider: document.getElementById('weightSlider'),
+            weightFill: document.getElementById('weightFill'),
+            weightThumb: document.getElementById('weightThumb'),
+            windSliderValue: document.getElementById('windSliderValue'),
+            windSlider: document.getElementById('windSlider'),
+            windFill: document.getElementById('windFill'),
+            windThumb: document.getElementById('windThumb'),
+            kiteTypeBtns: document.querySelectorAll('#kiteTypeToggle .kite-type-btn'),
+            ridingStyleBtns: document.querySelectorAll('#ridingStyleToggle .kite-type-btn'),
+            spotsButton: document.getElementById('spotsButton'),
+            spotsModal: document.getElementById('spotsModal'),
+            closeSpotsModal: document.getElementById('closeSpotsModal'),
+            spotsList: document.getElementById('spotsList'),
+            addSpotBtn: document.getElementById('addSpotBtn'),
+            addSpotModal: document.getElementById('addSpotModal'),
+            closeAddSpotModal: document.getElementById('closeAddSpotModal'),
+            cancelAddSpot: document.getElementById('cancelAddSpot'),
+            saveSpot: document.getElementById('saveSpot'),
+            spotNameInput: document.getElementById('spotNameInput'),
+            latInput: document.getElementById('latInput'),
+            lonInput: document.getElementById('lonInput'),
+            manualWindModal: document.getElementById('manualWindModal'),
+            closeManualWindModal: document.getElementById('closeManualWindModal'),
+            cancelManualWind: document.getElementById('cancelManualWind'),
+            saveManualWind: document.getElementById('saveManualWind'),
+            manualSpeedInput: document.getElementById('manualSpeedInput'),
+            manualGustsInput: document.getElementById('manualGustsInput'),
+            toast: document.getElementById('toast')
+        };
+
+        // Initialize
+        function init() {
+            loadSpots();
+            setupEventListeners();
+            updateUI();
+            calculateKiteSize();
+        }
+
+        // Load spots from localStorage
+        function loadSpots() {
+            const saved = localStorage.getItem('kitesizr_spots');
+            if (saved) {
+                state.spots = JSON.parse(saved);
+            }
+        }
+
+        // Save spots to localStorage
+        function saveSpots() {
+            localStorage.setItem('kitesizr_spots', JSON.stringify(state.spots));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Language toggle
+            elements.langBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.lang = btn.dataset.lang;
+                    elements.langBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateUI();
+                });
+            });
+
+            // Weight slider
+            setupSlider(elements.weightSlider, 30, 120, state.weight, (val) => {
+                state.weight = val;
+                elements.weightValue.textContent = val;
+                calculateKiteSize();
+            });
+
+            // Wind slider
+            setupSlider(elements.windSlider, 0, 40, state.windSpeed, (val) => {
+                state.windSpeed = val;
+                state.isManualWind = true; // Mark as manual when slider is used
+                state.windData = null; // Clear API data
+                elements.windSliderValue.textContent = val;
+                // Update location text to show "Manual" when slider is moved
+                const t = translations[state.lang];
+                elements.locationText.textContent = t.manual;
+                updateWindDisplay();
+                calculateKiteSize();
+            });
+
+            // Kite type
+            elements.kiteTypeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.kiteType = btn.dataset.kite;
+                    elements.kiteTypeBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    calculateKiteSize();
+                });
+            });
+
+            // Riding style
+            elements.ridingStyleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.ridingStyle = btn.dataset.style;
+                    elements.ridingStyleBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    calculateKiteSize();
+                });
+            });
+
+            // Location badge
+            elements.locationBadge.addEventListener('click', () => {
+                openModal(elements.spotsModal);
+                renderSpotsList();
+            });
+
+            // Refresh button
+            elements.refreshBtn.addEventListener('click', () => {
+                if (state.selectedSpot) {
+                    fetchWindData(state.selectedSpot);
+                }
+            });
+
+            // GPS button
+            elements.gpsButton.addEventListener('click', getGPSLocation);
+
+            // Spots button
+            elements.spotsButton.addEventListener('click', () => {
+                openModal(elements.spotsModal);
+                renderSpotsList();
+            });
+
+            // Modals
+            elements.closeSpotsModal.addEventListener('click', () => closeModal(elements.spotsModal));
+            elements.closeAddSpotModal.addEventListener('click', () => closeModal(elements.addSpotModal));
+            elements.closeManualWindModal.addEventListener('click', () => closeModal(elements.manualWindModal));
+            elements.cancelAddSpot.addEventListener('click', () => closeModal(elements.addSpotModal));
+            elements.cancelManualWind.addEventListener('click', () => closeModal(elements.manualWindModal));
+
+            elements.addSpotBtn.addEventListener('click', () => {
+                closeModal(elements.spotsModal);
+                openModal(elements.addSpotModal);
+            });
+
+            elements.saveSpot.addEventListener('click', addNewSpot);
+            elements.saveManualWind.addEventListener('click', setManualWind);
+
+            // Close modals on overlay click
+            [elements.spotsModal, elements.addSpotModal, elements.manualWindModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal);
+                });
+            });
+        }
+
+        // Setup custom slider
+        function setupSlider(container, min, max, initial, callback) {
+            const track = container.querySelector('.slider-track');
+            const fill = container.querySelector('.slider-fill');
+            const thumb = container.querySelector('.slider-thumb');
+            
+            let isDragging = false;
+
+            function updateValue(clientX) {
+                const rect = track.getBoundingClientRect();
+                const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                const value = Math.round(min + percent * (max - min));
+                
+                fill.style.width = `${percent * 100}%`;
+                thumb.style.left = `${percent * 100}%`;
+                
+                callback(value);
+            }
+
+            thumb.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+
+            track.addEventListener('mousedown', (e) => {
+                updateValue(e.clientX);
+                isDragging = true;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateValue(e.clientX);
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Touch events
+            thumb.addEventListener('touchstart', (e) => {
+                isDragging = true;
+            });
+
+            track.addEventListener('touchstart', (e) => {
+                updateValue(e.touches[0].clientX);
+                isDragging = true;
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    updateValue(e.touches[0].clientX);
+                }
+            });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
+            // Initial position
+            const percent = (initial - min) / (max - min);
+            fill.style.width = `${percent * 100}%`;
+            thumb.style.left = `${percent * 100}%`;
+        }
+
+        // Fetch wind data from Open-Meteo
+        async function fetchWindData(spot) {
+            if (state.isLoading) return;
+            
+            state.isLoading = true;
+            elements.refreshBtn.classList.add('spinning');
+            elements.windValue.textContent = '...';
+
+            try {
+                const params = new URLSearchParams({
+                    latitude: spot.latitude.toString(),
+                    longitude: spot.longitude.toString(),
+                    current_weather: 'true',
+                    hourly: 'windspeed_10m,windgusts_10m,winddirection_10m',
+                    timezone: 'auto'
+                });
+
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+                
+                if (!response.ok) throw new Error('API error');
+                
+                const data = await response.json();
+                
+                if (data.current_weather) {
+                    // Convert km/h to knots
+                    const speedKmh = data.current_weather.windspeed;
+                    const speedKnots = Math.round(speedKmh * 0.539957 * 10) / 10;
+                    
+                    // Get gusts from hourly data
+                    let gustsKnots = speedKnots + 5;
+                    if (data.hourly && data.hourly.windgusts_10m && data.hourly.windgusts_10m.length > 0) {
+                        const gustsKmh = data.hourly.windgusts_10m[0];
+                        if (gustsKmh) {
+                            gustsKnots = Math.round(gustsKmh * 0.539957 * 10) / 10;
+                        }
+                    }
+
+                    state.windData = {
+                        speed: speedKnots,
+                        gusts: gustsKnots,
+                        direction: data.current_weather.winddirection,
+                        timestamp: new Date(),
+                        source: 'open-meteo'
+                    };
+
+                    state.isManualWind = false; // Data came from API, not manual
+                    state.windSpeed = Math.round(speedKnots);
+                    
+                    // Update slider
+                    const percent = (state.windSpeed / 40) * 100;
+                    elements.windFill.style.width = `${percent}%`;
+                    elements.windThumb.style.left = `${percent}%`;
+                    elements.windSliderValue.textContent = state.windSpeed;
+                    
+                    updateWindDisplay();
+                    calculateKiteSize();
+                }
+            } catch (error) {
+                console.error('Error fetching wind:', error);
+                showToast('Failed to fetch wind data');
+            } finally {
+                state.isLoading = false;
+                elements.refreshBtn.classList.remove('spinning');
+            }
+        }
+
+        // Get GPS location
+        function getGPSLocation() {
+            if (!navigator.geolocation) {
+                showToast('Geolocation not supported');
+                return;
+            }
+
+            elements.gpsButton.disabled = true;
+            elements.gpsButton.innerHTML = '<span class="loading"></span><span>Getting location...</span>';
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const spot = {
+                        id: 'gps',
+                        name: 'Current Location',
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    
+                    state.selectedSpot = spot;
+                    elements.locationText.textContent = spot.name;
+                    
+                    fetchWindData(spot);
+                    
+                    elements.gpsButton.disabled = false;
+                    elements.gpsButton.innerHTML = '<span class="material-symbols-outlined">my_location</span><span>Use Current Location</span>';
+                },
+                (error) => {
+                    console.error('GPS error:', error);
+                    showToast('Could not get location');
+                    elements.gpsButton.disabled = false;
+                    elements.gpsButton.innerHTML = '<span class="material-symbols-outlined">my_location</span><span>Use Current Location</span>';
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // Update wind display
+        function updateWindDisplay() {
+            elements.windValue.textContent = state.windSpeed.toFixed(1);
+            
+            if (state.windData) {
+                if (state.windData.gusts && state.windData.gusts > state.windSpeed) {
+                    elements.gustsText.textContent = `${translations[state.lang].gusts}: ${state.windData.gusts.toFixed(1)} ${translations[state.lang].knots}`;
+                    elements.gustsText.style.display = 'block';
+                } else {
+                    elements.gustsText.style.display = 'none';
+                }
+
+                if (state.windData.direction !== undefined) {
+                    elements.directionArrow.textContent = degreesToCompass(state.windData.direction);
+                    elements.directionValue.textContent = `${state.windData.direction}°`;
+                }
+
+                elements.sourceValue.textContent = state.windData.source === 'open-meteo' ? 'Open-Meteo' : translations[state.lang].manual;
+            } else {
+                elements.gustsText.style.display = 'none';
+                elements.directionArrow.textContent = '--';
+                elements.directionValue.textContent = '--°';
+                elements.sourceValue.textContent = translations[state.lang].manual;
+            }
+        }
+
+        // Calculate kite size - IMPROVED ALGORITHM v2
+        // Combines kiteType (LEI/FOIL) with ridingStyle (PRO/AVERAGE/BEGINNER/SURF/HYDROFOIL)
+        function calculateKiteSize() {
+            const t = translations[state.lang];
+            
+            // Base factors for LEI kites by riding style
+            const leiFactors = {
+                'PRO': 2.4,      // Experienced riders, efficient technique
+                'AVERAGE': 2.3,  // Standard all-around riding
+                'BEGINNER': 2.2, // Beginners need more power, larger board
+                'SURF': 2.0,     // Wave riding, directional board
+                'HYDROFOIL': 1.5 // Foil board - overrides kite type
+            };
+            
+            // Foil kite factors by riding style
+            // Foil kites (soft kites) are similar in size to LEI kites
+            // but slightly more efficient due to better aerodynamics
+            const foilFactors = {
+                'PRO': 2.2,      // Pro on foil kite - similar to LEI
+                'AVERAGE': 2.1,  // Average on foil kite
+                'BEGINNER': 2.0, // Beginner on foil kite
+                'SURF': 1.9,     // Surf with foil kite
+                'HYDROFOIL': 1.7 // Foil board + foil kite = very efficient
+            };
+            
+            // Reference weight is 75kg (average rider used by manufacturers)
+            // Weight correction: for every 10kg difference, adjust by ~3%
+            const referenceWeight = 75;
+            const weightDiff = state.weight - referenceWeight;
+            const weightCorrection = 1 + (weightDiff / 300); // ±3% per 10kg
+            
+            // Wind speed sanity limits
+            if (state.windSpeed < 5) {
+                elements.kiteValueRow.style.display = 'none';
+                elements.windWarning.textContent = t.tooLittleWind;
+                elements.windWarning.className = 'wind-warning too-little';
+                elements.windWarning.style.display = 'block';
+                return;
+            }
+            
+            if (state.windSpeed > 45) {
+                elements.kiteValueRow.style.display = 'none';
+                elements.windWarning.textContent = t.tooMuchWind;
+                elements.windWarning.className = 'wind-warning too-much';
+                elements.windWarning.style.display = 'block';
+                return;
+            }
+            
+            // Get base factor based on kite type and riding style
+            let factor;
+            if (state.kiteType === 'FOIL') {
+                factor = foilFactors[state.ridingStyle] || 1.3;
+            } else {
+                // LEI kite
+                factor = leiFactors[state.ridingStyle] || 2.3;
+            }
+            
+            // Apply weight correction (subtle adjustment)
+            factor = factor * weightCorrection;
+            
+            // Base calculation: (weight / wind) * factor
+            let rawSize = (state.weight / state.windSpeed) * factor;
+            
+            // Non-linear corrections based on real-world manufacturer data
+            // Light wind (<12 knots): reduce size slightly (modern kites are more efficient)
+            if (state.windSpeed < 12) {
+                rawSize = rawSize * 0.92; // 8% reduction for light wind
+            }
+            // Medium wind (12-20 knots): standard range, no correction needed
+            // High wind (>30 knots): safety buffer - suggest slightly larger kite
+            else if (state.windSpeed > 30) {
+                rawSize = rawSize * 1.05; // 5% increase for high wind safety
+            }
+            
+            // Apply reasonable limits
+            // Max 21m (largest production LEI kites)
+            // Min 3m (smallest production kites)
+            if (rawSize > 21) {
+                elements.kiteValueRow.style.display = 'none';
+                elements.windWarning.textContent = t.tooLittleWind;
+                elements.windWarning.className = 'wind-warning too-little';
+                elements.windWarning.style.display = 'block';
+                return;
+            }
+            
+            if (rawSize < 3) {
+                elements.kiteValueRow.style.display = 'none';
+                elements.windWarning.textContent = t.tooMuchWind;
+                elements.windWarning.className = 'wind-warning too-much';
+                elements.windWarning.style.display = 'block';
+                return;
+            }
+            
+            // Round to appropriate precision based on kite size
+            // Small kites (<7m): 0.5m increments (more precision needed)
+            // Large kites (>=7m): whole numbers (standard kite sizes)
+            let roundedSize;
+            if (rawSize < 7) {
+                roundedSize = Math.round(rawSize * 2) / 2; // 0.5 increments
+            } else {
+                roundedSize = Math.round(rawSize); // Whole numbers
+            }
+            
+            // Ensure we don't show impossible sizes
+            roundedSize = Math.max(3, Math.min(21, roundedSize));
+            
+            // Display result
+            elements.windWarning.style.display = 'none';
+            elements.kiteValueRow.style.display = 'flex';
+            
+            // Format: remove .0 for whole numbers
+            elements.kiteValue.textContent = roundedSize % 1 === 0 ? roundedSize.toFixed(0) : roundedSize.toFixed(1);
+            
+            // Update badge with kite type and style
+            const kiteLabels = {
+                'LEI': 'LEI',
+                'FOIL': 'FOIL'
+            };
+            elements.kiteTypeBadge.textContent = kiteLabels[state.kiteType] || 'LEI';
+        }
+
+        // Degrees to compass
+        function degreesToCompass(degrees) {
+            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+            const index = Math.round(degrees / 45) % 8;
+            return directions[index];
+        }
+
+        // Render spots list
+        function renderSpotsList() {
+            elements.spotsList.innerHTML = '';
+            
+            state.spots.forEach((spot, index) => {
+                const item = document.createElement('div');
+                item.className = 'spot-item';
+                item.innerHTML = `
+                    <div class="spot-number">${index + 1}</div>
+                    <div class="spot-info">
+                        <div class="spot-name">${spot.name}</div>
+                        <div class="spot-coords">${spot.latitude.toFixed(4)}, ${spot.longitude.toFixed(4)}</div>
+                    </div>
+                    <span class="spot-arrow material-symbols-outlined">chevron_right</span>
+                `;
+                item.addEventListener('click', () => selectSpot(spot));
+                elements.spotsList.appendChild(item);
+            });
+        }
+
+        // Select spot
+        function selectSpot(spot) {
+            state.selectedSpot = spot;
+            state.isManualWind = false; // Reset manual flag when selecting a spot
+            elements.locationText.textContent = spot.name;
+            closeModal(elements.spotsModal);
+            fetchWindData(spot);
+        }
+
+        // Add new spot
+        function addNewSpot() {
+            const name = elements.spotNameInput.value.trim();
+            const lat = parseFloat(elements.latInput.value);
+            const lon = parseFloat(elements.lonInput.value);
+
+            if (!name || isNaN(lat) || isNaN(lon)) {
+                showToast('Please fill all fields');
+                return;
+            }
+
+            const newSpot = {
+                id: Date.now().toString(),
+                name,
+                latitude: lat,
+                longitude: lon
+            };
+
+            state.spots.push(newSpot);
+            saveSpots();
+            
+            elements.spotNameInput.value = '';
+            elements.latInput.value = '';
+            elements.lonInput.value = '';
+            
+            closeModal(elements.addSpotModal);
+            selectSpot(newSpot);
+            showToast('Spot added');
+        }
+
+        // Set manual wind
+        function setManualWind() {
+            const speed = parseFloat(elements.manualSpeedInput.value);
+            const gusts = parseFloat(elements.manualGustsInput.value);
+
+            if (isNaN(speed) || speed < 0) {
+                showToast('Please enter valid wind speed');
+                return;
+            }
+
+            state.windSpeed = speed;
+            state.isManualWind = true; // Mark as manual
+            state.windData = {
+                speed: speed,
+                gusts: isNaN(gusts) ? speed + 5 : gusts,
+                direction: 0,
+                timestamp: new Date(),
+                source: 'manual'
+            };
+
+            // Update slider
+            const percent = Math.min((speed / 40) * 100, 100);
+            elements.windFill.style.width = `${percent}%`;
+            elements.windThumb.style.left = `${percent}%`;
+            elements.windSliderValue.textContent = speed.toFixed(1);
+
+            // Update location text to show "Manual"
+            const t = translations[state.lang];
+            elements.locationText.textContent = t.manual;
+
+            elements.manualSpeedInput.value = '';
+            elements.manualGustsInput.value = '';
+
+            closeModal(elements.manualWindModal);
+            updateWindDisplay();
+            calculateKiteSize();
+            showToast('Wind updated');
+        }
+
+        // Modal helpers
+        function openModal(modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Update UI text
+        function updateUI() {
+            const t = translations[state.lang];
+            
+            // Only update location text if not in manual wind mode
+            if (!state.isManualWind) {
+                elements.locationText.textContent = state.selectedSpot ? state.selectedSpot.name : t.selectSpot;
+            }
+            elements.gpsButton.innerHTML = `<span class="material-symbols-outlined">my_location</span><span>${t.useGps}</span>`;
+            elements.spotsButton.querySelector('.spots-text').textContent = t.manageSpots;
+            
+            // Update slider labels
+            document.querySelectorAll('.slider-label').forEach((el, i) => {
+                if (i === 0) el.textContent = t.weight;
+                if (i === 1) el.textContent = t.windSpeed;
+            });
+
+            // Update kite type and riding style labels
+            document.querySelectorAll('[data-i18n="kiteType"]').forEach(el => el.textContent = t.kiteType);
+            document.querySelectorAll('[data-i18n="ridingStyle"]').forEach(el => el.textContent = t.ridingStyle);
+
+            // Update kite type buttons
+            elements.kiteTypeBtns.forEach(btn => {
+                const kite = btn.dataset.kite;
+                if (kite === 'LEI') btn.textContent = t.lei;
+                if (kite === 'FOIL') btn.textContent = t.foil;
+            });
+
+            // Update riding style buttons
+            elements.ridingStyleBtns.forEach(btn => {
+                const style = btn.dataset.style;
+                if (style === 'PRO') btn.textContent = t.pro;
+                if (style === 'AVERAGE') btn.textContent = t.average;
+                if (style === 'BEGINNER') btn.textContent = t.beginner;
+                if (style === 'SURF') btn.textContent = t.surf;
+                if (style === 'HYDROFOIL') btn.textContent = t.hydrofoil;
+            });
+
+            updateWindDisplay();
+            calculateKiteSize();
+        }
+
+        // Toast
+        function showToast(message) {
+            elements.toast.textContent = message;
+            elements.toast.classList.add('show');
+            setTimeout(() => {
+                elements.toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
