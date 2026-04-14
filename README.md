@@ -52,4 +52,4 @@ m² = (testsúly / szélsebesség) × alap faktor × stílus korrekció × súly
 
 ---
 
-Készítette: kobak | Támogatja a kiteboard.hu projektet 🌊
+Készítette: kobak | kiteboard.hu 🌊
