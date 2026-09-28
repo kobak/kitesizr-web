@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KiteSizR - Atmospheric Navigator</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet">
@@ -842,6 +842,61 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
+        /* Header action buttons */
+        .hero-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Slider: keyboard focus + no page scroll while dragging */
+        .slider-container {
+            touch-action: none;
+            outline: none;
+        }
+
+        .slider-container:focus-visible .slider-thumb {
+            box-shadow: 0 0 0 4px var(--secondary-fixed), 0 0 0 7px var(--primary);
+        }
+
+        /* Spot list actions */
+        .spot-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .spot-name {
+            overflow-wrap: anywhere;
+        }
+
+        .spot-action {
+            background: none;
+            border: none;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--outline);
+            display: flex;
+        }
+
+        .spot-action:hover {
+            background: var(--surface-container-high);
+            color: var(--primary);
+        }
+
+        .spot-action.delete:hover {
+            color: var(--danger);
+        }
+
+        .spots-empty {
+            text-align: center;
+            color: var(--outline);
+            font-size: 14px;
+            padding: 16px;
+        }
     </style>
 </head>
 <body>
@@ -853,34 +908,39 @@
                 <span class="logo-text">KiteSizR</span>
             </div>
             <div class="lang-toggle">
-                <button class="lang-btn" data-lang="hu">HU</button>
-                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn active" data-lang="hu">HU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
             </div>
         </header>
 
         <!-- Hero Card -->
         <div class="hero-card">
             <div class="hero-header">
-                <div class="location-badge" id="locationBadge">
+                <div class="location-badge" id="locationBadge" role="button" tabindex="0">
                     <span class="location-icon">📍</span>
-                    <span class="location-text" id="locationText">Select Spot</span>
+                    <span class="location-text" id="locationText">Válassz helyszínt</span>
                 </div>
-                <button class="refresh-btn" id="refreshBtn" title="Refresh wind data">
-                    <span class="material-symbols-outlined">refresh</span>
-                </button>
+                <div class="hero-actions">
+                    <button class="refresh-btn" id="manualWindBtn" data-i18n-title="manualWindTitle" data-i18n-aria="manualWindTitle">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="refresh-btn" id="refreshBtn" data-i18n-title="refresh" data-i18n-aria="refresh">
+                        <span class="material-symbols-outlined">refresh</span>
+                    </button>
+                </div>
             </div>
 
             <div class="wind-display">
-                <div class="wind-label">Current Wind</div>
+                <div class="wind-label" data-i18n="currentWind">Aktuális szél</div>
                 <div class="wind-value-row">
                     <span class="wind-value" id="windValue">--</span>
-                    <span class="wind-unit">knots</span>
+                    <span class="wind-unit" data-i18n="knots">csomó</span>
                 </div>
                 <div class="gusts-text" id="gustsText" style="display: none;"></div>
             </div>
 
             <div class="kite-display" id="kiteDisplay">
-                <div class="kite-label">Recommended Kite</div>
+                <div class="kite-label" data-i18n="recommendedKite">Ajánlott ernyő</div>
                 <div class="kite-value-row" id="kiteValueRow">
                     <span class="kite-value" id="kiteValue">--</span>
                     <div class="kite-unit-col">
@@ -893,12 +953,12 @@
 
             <div class="hero-footer">
                 <div class="footer-stat">
-                    <div class="footer-stat-label">Direction</div>
+                    <div class="footer-stat-label" data-i18n="direction">Irány</div>
                     <div class="direction-arrow" id="directionArrow">--</div>
                     <div class="footer-stat-value" id="directionValue">--°</div>
                 </div>
                 <div class="footer-stat">
-                    <div class="footer-stat-label">Source</div>
+                    <div class="footer-stat-label" data-i18n="source">Forrás</div>
                     <div class="footer-stat-value" id="sourceValue">--</div>
                 </div>
             </div>
@@ -907,7 +967,7 @@
         <!-- GPS Button -->
         <button class="gps-button" id="gpsButton">
             <span class="material-symbols-outlined">my_location</span>
-            <span>Use Current Location</span>
+            <span data-i18n="useGps">Aktuális helyzet</span>
         </button>
 
         <!-- Controls Card -->
@@ -915,17 +975,17 @@
             <!-- Weight Slider -->
             <div class="slider-section">
                 <div class="slider-header">
-                    <span class="slider-label">Weight</span>
+                    <span class="slider-label" data-i18n="weight">Testsúly</span>
                     <div class="slider-value-row">
                         <span class="slider-value" id="weightValue">75</span>
                         <span class="slider-unit">KG</span>
                     </div>
                 </div>
-                <div class="slider-container" id="weightSlider">
+                <div class="slider-container" id="weightSlider" role="slider" tabindex="0" data-i18n-aria="weight">
                     <div class="slider-track">
-                        <div class="slider-fill" id="weightFill" style="width: 50%"></div>
+                        <div class="slider-fill"></div>
                     </div>
-                    <div class="slider-thumb" id="weightThumb" style="left: 50%"></div>
+                    <div class="slider-thumb"></div>
                 </div>
                 <div class="slider-labels">
                     <span class="slider-minmax">30</span>
@@ -936,53 +996,53 @@
             <!-- Wind Slider -->
             <div class="slider-section">
                 <div class="slider-header">
-                    <span class="slider-label">Wind Speed</span>
+                    <span class="slider-label" data-i18n="windSpeed">Szélsebesség</span>
                     <div class="slider-value-row">
                         <span class="slider-value" id="windSliderValue">15</span>
-                        <span class="slider-unit">KNOTS</span>
+                        <span class="slider-unit" data-i18n="knotsUpper">CSOMÓ</span>
                     </div>
                 </div>
-                <div class="slider-container" id="windSlider">
+                <div class="slider-container" id="windSlider" role="slider" tabindex="0" data-i18n-aria="windSpeed">
                     <div class="slider-track">
-                        <div class="slider-fill" id="windFill" style="width: 37.5%"></div>
+                        <div class="slider-fill"></div>
                     </div>
-                    <div class="slider-thumb" id="windThumb" style="left: 37.5%"></div>
+                    <div class="slider-thumb"></div>
                 </div>
                 <div class="slider-labels">
                     <span class="slider-minmax">0</span>
-                    <span class="slider-minmax">40</span>
+                    <span class="slider-minmax">50</span>
                 </div>
             </div>
 
             <!-- Kite Type -->
             <div class="kite-type-container">
-                <div class="kite-type-label" data-i18n="kiteType">Kite Type</div>
+                <div class="kite-type-label" data-i18n="kiteType">Ernyő típusa</div>
                 <div class="kite-type-toggle" id="kiteTypeToggle">
-                    <button class="kite-type-btn active" data-kite="LEI">LEI</button>
-                    <button class="kite-type-btn" data-kite="FOIL">Foil</button>
+                    <button class="kite-type-btn active" data-kite="LEI" data-i18n="lei">LEI</button>
+                    <button class="kite-type-btn" data-kite="FOIL" data-i18n="foil">Fólia</button>
                 </div>
             </div>
 
             <!-- Riding Style -->
             <div class="kite-type-container" style="margin-top: 16px;">
-                <div class="kite-type-label" data-i18n="ridingStyle">Riding Style</div>
+                <div class="kite-type-label" data-i18n="ridingStyle">Vezetési stílus</div>
                 <div class="kite-type-toggle" id="ridingStyleToggle">
-                    <button class="kite-type-btn active" data-style="AVERAGE">Average</button>
-                    <button class="kite-type-btn" data-style="PRO">Pro</button>
+                    <button class="kite-type-btn active" data-style="AVERAGE" data-i18n="average">Átlagos</button>
+                    <button class="kite-type-btn" data-style="PRO" data-i18n="pro">Profi</button>
                 </div>
                 <div class="kite-type-toggle" style="margin-top: 8px;">
-                    <button class="kite-type-btn" data-style="BEGINNER">Beginner</button>
-                    <button class="kite-type-btn" data-style="SURF">Surf</button>
-                    <button class="kite-type-btn" data-style="HYDROFOIL">Hydrofoil</button>
+                    <button class="kite-type-btn" data-style="BEGINNER" data-i18n="beginner">Kezdő</button>
+                    <button class="kite-type-btn" data-style="SURF" data-i18n="surf">Szörf</button>
+                    <button class="kite-type-btn" data-style="HYDROFOIL" data-i18n="hydrofoil">Hidrofoil</button>
                 </div>
             </div>
         </div>
 
         <!-- Spots Button -->
-        <div class="spots-button" id="spotsButton">
+        <div class="spots-button" id="spotsButton" role="button" tabindex="0">
             <div class="spots-button-left">
                 <span class="spots-icon">📍</span>
-                <span class="spots-text">Manage Spots</span>
+                <span class="spots-text" data-i18n="manageSpots">Helyszínek kezelése</span>
             </div>
             <span class="spots-arrow">→</span>
         </div>
@@ -992,7 +1052,7 @@
     <div class="modal-overlay" id="spotsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Select Spot</h2>
+                <h2 class="modal-title" data-i18n="selectSpot">Válassz helyszínt</h2>
                 <button class="modal-close" id="closeSpotsModal">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -1000,47 +1060,47 @@
             <div class="spots-list" id="spotsList"></div>
             <button class="add-spot-btn" id="addSpotBtn">
                 <span class="material-symbols-outlined">add</span>
-                Add New Spot
+                <span data-i18n="addSpot">Új helyszín</span>
             </button>
         </div>
     </div>
 
-    <!-- Add Spot Modal -->
+    <!-- Add / Edit Spot Modal -->
     <div class="modal-overlay" id="addSpotModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Add New Spot</h2>
+                <h2 class="modal-title" id="spotModalTitle" data-i18n="addSpot">Új helyszín</h2>
                 <button class="modal-close" id="closeAddSpotModal">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            
+
             <div class="map-container" id="mapContainer">
                 <div class="map-placeholder">
                     <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.3;">map</span>
-                    <div class="map-instruction">Click to set location or enter coordinates</div>
+                    <div class="map-instruction" data-i18n="mapInstruction">Add meg a koordinátákat</div>
                 </div>
             </div>
 
             <div class="input-group">
-                <label class="input-label">Spot Name</label>
-                <input type="text" class="input" id="spotNameInput" placeholder="e.g., My Favorite Spot">
+                <label class="input-label" for="spotNameInput" data-i18n="spotName">Helyszín neve</label>
+                <input type="text" class="input" id="spotNameInput" maxlength="60" data-i18n-placeholder="spotNamePlaceholder">
             </div>
 
             <div class="row">
                 <div class="input-group">
-                    <label class="input-label">Latitude</label>
-                    <input type="number" class="input" id="latInput" placeholder="46.8234" step="0.0001">
+                    <label class="input-label" for="latInput" data-i18n="latitude">Szélesség</label>
+                    <input type="number" class="input" id="latInput" placeholder="46.8234" step="0.0001" min="-90" max="90">
                 </div>
                 <div class="input-group">
-                    <label class="input-label">Longitude</label>
-                    <input type="number" class="input" id="lonInput" placeholder="17.8234" step="0.0001">
+                    <label class="input-label" for="lonInput" data-i18n="longitude">Hosszúság</label>
+                    <input type="number" class="input" id="lonInput" placeholder="17.8234" step="0.0001" min="-180" max="180">
                 </div>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn-secondary" id="cancelAddSpot">Cancel</button>
-                <button class="btn-primary" id="saveSpot">Save Spot</button>
+                <button class="btn-secondary" id="cancelAddSpot" data-i18n="cancel">Mégse</button>
+                <button class="btn-primary" id="saveSpot" data-i18n="save">Mentés</button>
             </div>
         </div>
     </div>
@@ -1049,7 +1109,7 @@
     <div class="modal-overlay" id="manualWindModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Manual Wind Input</h2>
+                <h2 class="modal-title" data-i18n="manualWindTitle">Kézi szélmegadás</h2>
                 <button class="modal-close" id="closeManualWindModal">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -1057,24 +1117,24 @@
 
             <div class="wind-input-row">
                 <div class="input-group">
-                    <label class="input-label">Wind Speed (knots)</label>
-                    <input type="number" class="input" id="manualSpeedInput" placeholder="18" step="0.1">
+                    <label class="input-label" for="manualSpeedInput" data-i18n="windSpeedKnots">Szélsebesség (csomó)</label>
+                    <input type="number" class="input" id="manualSpeedInput" placeholder="18" step="0.1" min="0">
                 </div>
                 <div class="input-group">
-                    <label class="input-label">Gusts (optional)</label>
-                    <input type="number" class="input" id="manualGustsInput" placeholder="22" step="0.1">
+                    <label class="input-label" for="manualGustsInput" data-i18n="gustsOptional">Lökések (opcionális)</label>
+                    <input type="number" class="input" id="manualGustsInput" placeholder="22" step="0.1" min="0">
                 </div>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn-secondary" id="cancelManualWind">Cancel</button>
-                <button class="btn-primary" id="saveManualWind">Set Wind</button>
+                <button class="btn-secondary" id="cancelManualWind" data-i18n="cancel">Mégse</button>
+                <button class="btn-primary" id="saveManualWind" data-i18n="setWind">Beállítás</button>
             </div>
         </div>
     </div>
 
     <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
         // Translations
@@ -1085,18 +1145,33 @@
                 gusts: 'Gusts',
                 recommendedKite: 'Recommended Kite',
                 direction: 'Direction',
+                source: 'Source',
                 manual: '📝 Manual',
                 knots: 'knots',
+                knotsUpper: 'KNOTS',
                 weight: 'Weight',
                 windSpeed: 'Wind Speed',
                 addSpot: 'Add New Spot',
+                editSpot: 'Edit Spot',
                 spotName: 'Spot Name',
+                spotNamePlaceholder: 'e.g., My Favorite Spot',
+                mapInstruction: 'Enter the coordinates below',
                 latitude: 'Latitude',
                 longitude: 'Longitude',
                 cancel: 'Cancel',
                 save: 'Save',
+                edit: 'Edit',
+                delete: 'Delete',
                 manageSpots: 'Manage Spots',
+                noSpots: 'No spots yet. Add one below!',
                 useGps: 'Use Current Location',
+                gettingLocation: 'Getting location...',
+                currentLocation: 'Current Location',
+                refresh: 'Refresh wind data',
+                manualWindTitle: 'Manual Wind Input',
+                windSpeedKnots: 'Wind Speed (knots)',
+                gustsOptional: 'Gusts (optional)',
+                setWind: 'Set Wind',
                 tooLittleWind: 'Too little wind',
                 tooMuchWind: 'Too much wind',
                 kiteType: 'Kite Type',
@@ -1107,7 +1182,19 @@
                 average: 'Average',
                 beginner: 'Beginner',
                 surf: 'Surf',
-                hydrofoil: 'Hydrofoil'
+                hydrofoil: 'Hydrofoil',
+                toastFetchFailed: 'Failed to fetch wind data',
+                toastGeoUnsupported: 'Geolocation not supported',
+                toastLocationFailed: 'Could not get location',
+                toastFillAll: 'Please fill all fields',
+                toastInvalidCoords: 'Invalid coordinates',
+                toastSpotAdded: 'Spot added',
+                toastSpotUpdated: 'Spot updated',
+                toastSpotDeleted: 'Spot deleted',
+                toastInvalidWind: 'Please enter a valid wind speed',
+                toastWindUpdated: 'Wind updated',
+                toastSelectSpotFirst: 'Select a spot first',
+                confirmDelete: 'Delete "{name}"?'
             },
             hu: {
                 selectSpot: 'Válassz helyszínt',
@@ -1115,18 +1202,33 @@
                 gusts: 'Lökések',
                 recommendedKite: 'Ajánlott ernyő',
                 direction: 'Irány',
+                source: 'Forrás',
                 manual: '📝 Kézi beállítás',
                 knots: 'csomó',
+                knotsUpper: 'CSOMÓ',
                 weight: 'Testsúly',
                 windSpeed: 'Szélsebesség',
                 addSpot: 'Új helyszín',
+                editSpot: 'Helyszín szerkesztése',
                 spotName: 'Helyszín neve',
+                spotNamePlaceholder: 'pl. Kedvenc spotom',
+                mapInstruction: 'Add meg lent a koordinátákat',
                 latitude: 'Szélesség',
                 longitude: 'Hosszúság',
                 cancel: 'Mégse',
                 save: 'Mentés',
+                edit: 'Szerkesztés',
+                delete: 'Törlés',
                 manageSpots: 'Helyszínek kezelése',
+                noSpots: 'Még nincs helyszín. Adj hozzá egyet lent!',
                 useGps: 'Aktuális helyzet',
+                gettingLocation: 'Helymeghatározás...',
+                currentLocation: 'Jelenlegi helyzet',
+                refresh: 'Széladat frissítése',
+                manualWindTitle: 'Kézi szélmegadás',
+                windSpeedKnots: 'Szélsebesség (csomó)',
+                gustsOptional: 'Lökések (opcionális)',
+                setWind: 'Beállítás',
                 tooLittleWind: 'Kevés a szél',
                 tooMuchWind: 'Túl erős szél',
                 kiteType: 'Ernyő típusa',
@@ -1137,9 +1239,104 @@
                 average: 'Átlagos',
                 beginner: 'Kezdő',
                 surf: 'Szörf',
-                hydrofoil: 'Hidrofoil'
+                hydrofoil: 'Hidrofoil',
+                toastFetchFailed: 'Nem sikerült lekérni a széladatot',
+                toastGeoUnsupported: 'A helymeghatározás nem támogatott',
+                toastLocationFailed: 'Nem sikerült meghatározni a helyzetet',
+                toastFillAll: 'Tölts ki minden mezőt',
+                toastInvalidCoords: 'Érvénytelen koordináták',
+                toastSpotAdded: 'Helyszín hozzáadva',
+                toastSpotUpdated: 'Helyszín frissítve',
+                toastSpotDeleted: 'Helyszín törölve',
+                toastInvalidWind: 'Adj meg érvényes szélsebességet',
+                toastWindUpdated: 'Szél beállítva',
+                toastSelectSpotFirst: 'Előbb válassz helyszínt',
+                confirmDelete: 'Törlöd: „{name}”?'
             }
         };
+
+        // ---------------------------------------------------------------
+        // Kite size algorithm (pure function, no DOM access)
+        // m² = (weight / wind) × base factor × weight correction × wind correction
+        // ---------------------------------------------------------------
+        const KITE_FACTORS = {
+            LEI: {
+                PRO: 2.4,       // Experienced riders, efficient technique
+                AVERAGE: 2.3,   // Standard all-around riding
+                BEGINNER: 2.2,  // Beginners need more power, larger board
+                SURF: 2.0,      // Wave riding, directional board
+                HYDROFOIL: 1.5  // Foil board - very efficient
+            },
+            // Foil (soft) kites: similar sizes, slightly more efficient
+            FOIL: {
+                PRO: 2.2,
+                AVERAGE: 2.1,
+                BEGINNER: 2.0,
+                SURF: 1.9,
+                HYDROFOIL: 1.7
+            }
+        };
+
+        const MIN_WIND = 5;     // knots, below this: too little wind
+        const MAX_WIND = 45;    // knots, above this: too much wind
+        const MIN_KITE = 3;     // m², smallest production kites
+        const MAX_KITE = 21;    // m², largest production LEI kites
+
+        const lerp = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+
+        // Continuous wind correction (no jumps between wind ranges).
+        // Light wind (8 → 14 kt): modern kites are efficient, up to 8% smaller.
+        // Strong wind (25 → 35 kt): safety margin, up to 5% smaller.
+        // Every segment keeps the result strictly decreasing as wind rises.
+        function windCorrection(wind) {
+            if (wind < 14) return lerp(0.92, 1.0, (wind - 8) / 6);
+            if (wind > 25) return lerp(1.0, 0.95, (wind - 25) / 10);
+            return 1.0;
+        }
+
+        // Returns { status: 'ok', size, rawSize } or { status: 'tooLittle' | 'tooMuch' }
+        function calcKiteSize({ weight, wind, kiteType, ridingStyle }) {
+            if (!(wind >= MIN_WIND)) return { status: 'tooLittle' };
+            if (wind > MAX_WIND) return { status: 'tooMuch' };
+
+            const factors = KITE_FACTORS[kiteType] || KITE_FACTORS.LEI;
+            const baseFactor = factors[ridingStyle] || factors.AVERAGE;
+
+            // Reference weight is 75kg: ±3% per 10kg difference
+            const weightCorrection = 1 + (weight - 75) / 300;
+
+            const rawSize = (weight / wind) * baseFactor * weightCorrection * windCorrection(wind);
+
+            if (rawSize > MAX_KITE) return { status: 'tooLittle' };
+            if (rawSize < MIN_KITE) return { status: 'tooMuch' };
+
+            // Small kites (<7m): 0.5m steps, larger kites: whole numbers
+            const size = rawSize < 7 ? Math.round(rawSize * 2) / 2 : Math.round(rawSize);
+            return { status: 'ok', size: Math.max(MIN_KITE, Math.min(MAX_KITE, size)), rawSize };
+        }
+
+        // ---------------------------------------------------------------
+        // Storage helpers (localStorage may be unavailable, e.g. private mode)
+        // ---------------------------------------------------------------
+        const STORAGE_SPOTS = 'kitesizr_spots';
+        const STORAGE_SETTINGS = 'kitesizr_settings';
+
+        function readStorage(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function writeStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                // Ignore: app keeps working without persistence
+            }
+        }
 
         // Default spots
         const defaultSpots = [
@@ -1150,9 +1347,12 @@
             { id: '5', name: 'Fenyves', latitude: 46.6789, longitude: 17.4567 },
         ];
 
+        const WEIGHT_RANGE = { min: 30, max: 120 };
+        const WIND_RANGE = { min: 0, max: 50 };
+
         // State
         let state = {
-            lang: 'en',
+            lang: 'hu',
             weight: 75,
             windSpeed: 15,
             kiteType: 'LEI',        // LEI or FOIL
@@ -1161,7 +1361,8 @@
             spots: [...defaultSpots],
             windData: null,
             isLoading: false,
-            isManualWind: false
+            isManualWind: false,
+            editingSpotId: null
         };
 
         // DOM Elements
@@ -1170,6 +1371,7 @@
             locationBadge: document.getElementById('locationBadge'),
             locationText: document.getElementById('locationText'),
             refreshBtn: document.getElementById('refreshBtn'),
+            manualWindBtn: document.getElementById('manualWindBtn'),
             windValue: document.getElementById('windValue'),
             gustsText: document.getElementById('gustsText'),
             kiteValue: document.getElementById('kiteValue'),
@@ -1182,20 +1384,17 @@
             gpsButton: document.getElementById('gpsButton'),
             weightValue: document.getElementById('weightValue'),
             weightSlider: document.getElementById('weightSlider'),
-            weightFill: document.getElementById('weightFill'),
-            weightThumb: document.getElementById('weightThumb'),
             windSliderValue: document.getElementById('windSliderValue'),
             windSlider: document.getElementById('windSlider'),
-            windFill: document.getElementById('windFill'),
-            windThumb: document.getElementById('windThumb'),
             kiteTypeBtns: document.querySelectorAll('#kiteTypeToggle .kite-type-btn'),
-            ridingStyleBtns: document.querySelectorAll('#ridingStyleToggle .kite-type-btn'),
+            ridingStyleBtns: document.querySelectorAll('.kite-type-btn[data-style]'),
             spotsButton: document.getElementById('spotsButton'),
             spotsModal: document.getElementById('spotsModal'),
             closeSpotsModal: document.getElementById('closeSpotsModal'),
             spotsList: document.getElementById('spotsList'),
             addSpotBtn: document.getElementById('addSpotBtn'),
             addSpotModal: document.getElementById('addSpotModal'),
+            spotModalTitle: document.getElementById('spotModalTitle'),
             closeAddSpotModal: document.getElementById('closeAddSpotModal'),
             cancelAddSpot: document.getElementById('cancelAddSpot'),
             saveSpot: document.getElementById('saveSpot'),
@@ -1211,25 +1410,78 @@
             toast: document.getElementById('toast')
         };
 
+        let weightSlider;
+        let windSlider;
+
+        const t = (key) => translations[state.lang][key] ?? translations.en[key] ?? key;
+
         // Initialize
         function init() {
             loadSpots();
+            loadSettings();
             setupEventListeners();
+            applyToggleStates();
             updateUI();
-            calculateKiteSize();
+
+            // Restore last selected spot (GPS location is not persisted)
+            const settings = readStorage(STORAGE_SETTINGS);
+            const lastSpot = settings && state.spots.find(s => s.id === settings.selectedSpotId);
+            if (lastSpot) selectSpot(lastSpot);
         }
 
         // Load spots from localStorage
         function loadSpots() {
-            const saved = localStorage.getItem('kitesizr_spots');
-            if (saved) {
-                state.spots = JSON.parse(saved);
+            const saved = readStorage(STORAGE_SPOTS);
+            if (Array.isArray(saved)) {
+                state.spots = saved.filter(s =>
+                    s && typeof s.name === 'string' &&
+                    Number.isFinite(s.latitude) && Number.isFinite(s.longitude)
+                );
             }
         }
 
-        // Save spots to localStorage
         function saveSpots() {
-            localStorage.setItem('kitesizr_spots', JSON.stringify(state.spots));
+            writeStorage(STORAGE_SPOTS, state.spots);
+        }
+
+        // Load user settings (language, weight, kite type, style)
+        function loadSettings() {
+            const s = readStorage(STORAGE_SETTINGS);
+            if (!s) return;
+            if (translations[s.lang]) state.lang = s.lang;
+            if (Number.isFinite(s.weight)) {
+                state.weight = Math.max(WEIGHT_RANGE.min, Math.min(WEIGHT_RANGE.max, Math.round(s.weight)));
+            }
+            if (KITE_FACTORS[s.kiteType]) state.kiteType = s.kiteType;
+            if (KITE_FACTORS.LEI[s.ridingStyle]) state.ridingStyle = s.ridingStyle;
+        }
+
+        function saveSettings() {
+            writeStorage(STORAGE_SETTINGS, {
+                lang: state.lang,
+                weight: state.weight,
+                kiteType: state.kiteType,
+                ridingStyle: state.ridingStyle,
+                selectedSpotId: state.selectedSpot && state.selectedSpot.id !== 'gps' ? state.selectedSpot.id : null
+            });
+        }
+
+        // Sync toggle buttons with state
+        function applyToggleStates() {
+            elements.langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === state.lang));
+            elements.kiteTypeBtns.forEach(b => b.classList.toggle('active', b.dataset.kite === state.kiteType));
+            elements.ridingStyleBtns.forEach(b => b.classList.toggle('active', b.dataset.style === state.ridingStyle));
+        }
+
+        // Make role="button" divs keyboard-activatable
+        function onActivate(el, handler) {
+            el.addEventListener('click', handler);
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handler();
+                }
+            });
         }
 
         // Setup event listeners
@@ -1238,28 +1490,28 @@
             elements.langBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     state.lang = btn.dataset.lang;
-                    elements.langBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+                    applyToggleStates();
                     updateUI();
+                    saveSettings();
                 });
             });
 
             // Weight slider
-            setupSlider(elements.weightSlider, 30, 120, state.weight, (val) => {
+            weightSlider = setupSlider(elements.weightSlider, WEIGHT_RANGE.min, WEIGHT_RANGE.max, state.weight, (val) => {
                 state.weight = val;
                 elements.weightValue.textContent = val;
                 calculateKiteSize();
+                saveSettings();
             });
+            elements.weightValue.textContent = state.weight;
 
             // Wind slider
-            setupSlider(elements.windSlider, 0, 40, state.windSpeed, (val) => {
+            windSlider = setupSlider(elements.windSlider, WIND_RANGE.min, WIND_RANGE.max, state.windSpeed, (val) => {
                 state.windSpeed = val;
                 state.isManualWind = true; // Mark as manual when slider is used
                 state.windData = null; // Clear API data
                 elements.windSliderValue.textContent = val;
-                // Update location text to show "Manual" when slider is moved
-                const t = translations[state.lang];
-                elements.locationText.textContent = t.manual;
+                elements.locationText.textContent = t('manual');
                 updateWindDisplay();
                 calculateKiteSize();
             });
@@ -1268,9 +1520,9 @@
             elements.kiteTypeBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     state.kiteType = btn.dataset.kite;
-                    elements.kiteTypeBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+                    applyToggleStates();
                     calculateKiteSize();
+                    saveSettings();
                 });
             });
 
@@ -1278,33 +1530,38 @@
             elements.ridingStyleBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     state.ridingStyle = btn.dataset.style;
-                    elements.ridingStyleBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+                    applyToggleStates();
                     calculateKiteSize();
+                    saveSettings();
                 });
             });
 
-            // Location badge
-            elements.locationBadge.addEventListener('click', () => {
-                openModal(elements.spotsModal);
+            const openSpots = () => {
                 renderSpotsList();
-            });
+                openModal(elements.spotsModal);
+            };
+            onActivate(elements.locationBadge, openSpots);
+            onActivate(elements.spotsButton, openSpots);
 
             // Refresh button
             elements.refreshBtn.addEventListener('click', () => {
                 if (state.selectedSpot) {
                     fetchWindData(state.selectedSpot);
+                } else {
+                    showToast(t('toastSelectSpotFirst'));
                 }
+            });
+
+            // Manual wind button
+            elements.manualWindBtn.addEventListener('click', () => {
+                elements.manualSpeedInput.value = state.windSpeed;
+                elements.manualGustsInput.value = state.windData && state.windData.gusts > state.windSpeed ? state.windData.gusts : '';
+                openModal(elements.manualWindModal);
+                elements.manualSpeedInput.focus();
             });
 
             // GPS button
             elements.gpsButton.addEventListener('click', getGPSLocation);
-
-            // Spots button
-            elements.spotsButton.addEventListener('click', () => {
-                openModal(elements.spotsModal);
-                renderSpotsList();
-            });
 
             // Modals
             elements.closeSpotsModal.addEventListener('click', () => closeModal(elements.spotsModal));
@@ -1313,91 +1570,131 @@
             elements.cancelAddSpot.addEventListener('click', () => closeModal(elements.addSpotModal));
             elements.cancelManualWind.addEventListener('click', () => closeModal(elements.manualWindModal));
 
-            elements.addSpotBtn.addEventListener('click', () => {
-                closeModal(elements.spotsModal);
-                openModal(elements.addSpotModal);
-            });
+            elements.addSpotBtn.addEventListener('click', () => openSpotEditor(null));
 
-            elements.saveSpot.addEventListener('click', addNewSpot);
+            elements.saveSpot.addEventListener('click', saveSpotFromForm);
             elements.saveManualWind.addEventListener('click', setManualWind);
 
-            // Close modals on overlay click
-            [elements.spotsModal, elements.addSpotModal, elements.manualWindModal].forEach(modal => {
+            // Enter submits the forms
+            [elements.spotNameInput, elements.latInput, elements.lonInput].forEach(input => {
+                input.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveSpotFromForm(); });
+            });
+            [elements.manualSpeedInput, elements.manualGustsInput].forEach(input => {
+                input.addEventListener('keydown', (e) => { if (e.key === 'Enter') setManualWind(); });
+            });
+
+            // Close modals on overlay click / Escape
+            const modals = [elements.spotsModal, elements.addSpotModal, elements.manualWindModal];
+            modals.forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) closeModal(modal);
                 });
             });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modals.forEach(m => m.classList.contains('active') && closeModal(m));
+            });
         }
 
-        // Setup custom slider
+        // Setup custom slider (mouse, touch and keyboard).
+        // Returns { setValue } to move the slider without firing the callback.
         function setupSlider(container, min, max, initial, callback) {
             const track = container.querySelector('.slider-track');
             const fill = container.querySelector('.slider-fill');
             const thumb = container.querySelector('.slider-thumb');
-            
-            let isDragging = false;
 
-            function updateValue(clientX) {
-                const rect = track.getBoundingClientRect();
-                const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-                const value = Math.round(min + percent * (max - min));
-                
+            let isDragging = false;
+            let current = initial;
+
+            container.setAttribute('aria-valuemin', min);
+            container.setAttribute('aria-valuemax', max);
+
+            function render(value) {
+                const percent = Math.max(0, Math.min(1, (value - min) / (max - min)));
                 fill.style.width = `${percent * 100}%`;
                 thumb.style.left = `${percent * 100}%`;
-                
-                callback(value);
+                container.setAttribute('aria-valuenow', value);
             }
 
-            thumb.addEventListener('mousedown', (e) => {
+            function setFromUser(value) {
+                value = Math.max(min, Math.min(max, Math.round(value)));
+                render(value);
+                if (value !== current) {
+                    current = value;
+                    callback(value);
+                }
+            }
+
+            function updateFromPointer(clientX) {
+                const rect = track.getBoundingClientRect();
+                const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                setFromUser(min + percent * (max - min));
+            }
+
+            container.addEventListener('mousedown', (e) => {
                 isDragging = true;
                 e.preventDefault();
-            });
-
-            track.addEventListener('mousedown', (e) => {
-                updateValue(e.clientX);
-                isDragging = true;
+                container.focus();
+                updateFromPointer(e.clientX);
             });
 
             document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    updateValue(e.clientX);
-                }
+                if (isDragging) updateFromPointer(e.clientX);
             });
 
             document.addEventListener('mouseup', () => {
                 isDragging = false;
             });
 
-            // Touch events
-            thumb.addEventListener('touchstart', (e) => {
+            // Touch events (passive: false so the page does not scroll while dragging)
+            container.addEventListener('touchstart', (e) => {
                 isDragging = true;
-            });
-
-            track.addEventListener('touchstart', (e) => {
-                updateValue(e.touches[0].clientX);
-                isDragging = true;
-            });
+                e.preventDefault();
+                updateFromPointer(e.touches[0].clientX);
+            }, { passive: false });
 
             document.addEventListener('touchmove', (e) => {
                 if (isDragging) {
-                    updateValue(e.touches[0].clientX);
+                    e.preventDefault();
+                    updateFromPointer(e.touches[0].clientX);
                 }
-            });
+            }, { passive: false });
 
             document.addEventListener('touchend', () => {
                 isDragging = false;
             });
 
-            // Initial position
-            const percent = (initial - min) / (max - min);
-            fill.style.width = `${percent * 100}%`;
-            thumb.style.left = `${percent * 100}%`;
+            // Keyboard
+            container.addEventListener('keydown', (e) => {
+                const steps = {
+                    ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1,
+                    PageUp: 5, PageDown: -5
+                };
+                if (e.key in steps) {
+                    setFromUser(current + steps[e.key]);
+                } else if (e.key === 'Home') {
+                    setFromUser(min);
+                } else if (e.key === 'End') {
+                    setFromUser(max);
+                } else {
+                    return;
+                }
+                e.preventDefault();
+            });
+
+            render(initial);
+
+            return {
+                setValue(value) {
+                    current = Math.round(value);
+                    render(value);
+                }
+            };
         }
 
-        // Fetch wind data from Open-Meteo
+        // Fetch current wind data from Open-Meteo (knots)
         async function fetchWindData(spot) {
             if (state.isLoading) return;
-            
+
             state.isLoading = true;
             elements.refreshBtn.classList.add('spinning');
             elements.windValue.textContent = '...';
@@ -1406,54 +1703,44 @@
                 const params = new URLSearchParams({
                     latitude: spot.latitude.toString(),
                     longitude: spot.longitude.toString(),
-                    current_weather: 'true',
-                    hourly: 'windspeed_10m,windgusts_10m,winddirection_10m',
+                    current: 'wind_speed_10m,wind_gusts_10m,wind_direction_10m',
+                    wind_speed_unit: 'kn',
                     timezone: 'auto'
                 });
 
                 const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
-                
-                if (!response.ok) throw new Error('API error');
-                
+                if (!response.ok) throw new Error(`API error ${response.status}`);
+
                 const data = await response.json();
-                
-                if (data.current_weather) {
-                    // Convert km/h to knots
-                    const speedKmh = data.current_weather.windspeed;
-                    const speedKnots = Math.round(speedKmh * 0.539957 * 10) / 10;
-                    
-                    // Get gusts from hourly data
-                    let gustsKnots = speedKnots + 5;
-                    if (data.hourly && data.hourly.windgusts_10m && data.hourly.windgusts_10m.length > 0) {
-                        const gustsKmh = data.hourly.windgusts_10m[0];
-                        if (gustsKmh) {
-                            gustsKnots = Math.round(gustsKmh * 0.539957 * 10) / 10;
-                        }
-                    }
+                const current = data.current;
+                if (!current || !Number.isFinite(current.wind_speed_10m)) throw new Error('Missing wind data');
 
-                    state.windData = {
-                        speed: speedKnots,
-                        gusts: gustsKnots,
-                        direction: data.current_weather.winddirection,
-                        timestamp: new Date(),
-                        source: 'open-meteo'
-                    };
+                const speedKnots = Math.round(current.wind_speed_10m * 10) / 10;
+                const gustsKnots = Number.isFinite(current.wind_gusts_10m)
+                    ? Math.round(current.wind_gusts_10m * 10) / 10
+                    : null;
 
-                    state.isManualWind = false; // Data came from API, not manual
-                    state.windSpeed = Math.round(speedKnots);
-                    
-                    // Update slider
-                    const percent = (state.windSpeed / 40) * 100;
-                    elements.windFill.style.width = `${percent}%`;
-                    elements.windThumb.style.left = `${percent}%`;
-                    elements.windSliderValue.textContent = state.windSpeed;
-                    
-                    updateWindDisplay();
-                    calculateKiteSize();
-                }
+                state.windData = {
+                    speed: speedKnots,
+                    gusts: gustsKnots,
+                    direction: Number.isFinite(current.wind_direction_10m) ? current.wind_direction_10m : undefined,
+                    timestamp: new Date(),
+                    source: 'open-meteo'
+                };
+
+                state.isManualWind = false;
+                state.windSpeed = speedKnots;
+                elements.locationText.textContent = spot.name;
+
+                windSlider.setValue(Math.min(WIND_RANGE.max, speedKnots));
+                elements.windSliderValue.textContent = Math.round(speedKnots);
+
+                updateWindDisplay();
+                calculateKiteSize();
             } catch (error) {
                 console.error('Error fetching wind:', error);
-                showToast('Failed to fetch wind data');
+                showToast(t('toastFetchFailed'));
+                updateWindDisplay();
             } finally {
                 state.isLoading = false;
                 elements.refreshBtn.classList.remove('spinning');
@@ -1461,37 +1748,44 @@
         }
 
         // Get GPS location
+        function setGpsButton(loading) {
+            elements.gpsButton.disabled = loading;
+            elements.gpsButton.replaceChildren();
+            const icon = document.createElement('span');
+            if (loading) {
+                icon.className = 'loading';
+            } else {
+                icon.className = 'material-symbols-outlined';
+                icon.textContent = 'my_location';
+            }
+            const label = document.createElement('span');
+            label.textContent = t(loading ? 'gettingLocation' : 'useGps');
+            elements.gpsButton.append(icon, label);
+        }
+
         function getGPSLocation() {
             if (!navigator.geolocation) {
-                showToast('Geolocation not supported');
+                showToast(t('toastGeoUnsupported'));
                 return;
             }
 
-            elements.gpsButton.disabled = true;
-            elements.gpsButton.innerHTML = '<span class="loading"></span><span>Getting location...</span>';
+            setGpsButton(true);
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const spot = {
                         id: 'gps',
-                        name: 'Current Location',
+                        name: t('currentLocation'),
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     };
-                    
-                    state.selectedSpot = spot;
-                    elements.locationText.textContent = spot.name;
-                    
-                    fetchWindData(spot);
-                    
-                    elements.gpsButton.disabled = false;
-                    elements.gpsButton.innerHTML = '<span class="material-symbols-outlined">my_location</span><span>Use Current Location</span>';
+                    setGpsButton(false);
+                    selectSpot(spot);
                 },
                 (error) => {
                     console.error('GPS error:', error);
-                    showToast('Could not get location');
-                    elements.gpsButton.disabled = false;
-                    elements.gpsButton.innerHTML = '<span class="material-symbols-outlined">my_location</span><span>Use Current Location</span>';
+                    showToast(t('toastLocationFailed'));
+                    setGpsButton(false);
                 },
                 { enableHighAccuracy: true, timeout: 10000 }
             );
@@ -1500,148 +1794,54 @@
         // Update wind display
         function updateWindDisplay() {
             elements.windValue.textContent = state.windSpeed.toFixed(1);
-            
+
             if (state.windData) {
                 if (state.windData.gusts && state.windData.gusts > state.windSpeed) {
-                    elements.gustsText.textContent = `${translations[state.lang].gusts}: ${state.windData.gusts.toFixed(1)} ${translations[state.lang].knots}`;
+                    elements.gustsText.textContent = `${t('gusts')}: ${state.windData.gusts.toFixed(1)} ${t('knots')}`;
                     elements.gustsText.style.display = 'block';
                 } else {
                     elements.gustsText.style.display = 'none';
                 }
 
-                if (state.windData.direction !== undefined) {
+                if (Number.isFinite(state.windData.direction)) {
                     elements.directionArrow.textContent = degreesToCompass(state.windData.direction);
-                    elements.directionValue.textContent = `${state.windData.direction}°`;
+                    elements.directionValue.textContent = `${Math.round(state.windData.direction)}°`;
+                } else {
+                    elements.directionArrow.textContent = '--';
+                    elements.directionValue.textContent = '--°';
                 }
 
-                elements.sourceValue.textContent = state.windData.source === 'open-meteo' ? 'Open-Meteo' : translations[state.lang].manual;
+                elements.sourceValue.textContent = state.windData.source === 'open-meteo' ? 'Open-Meteo' : t('manual');
             } else {
                 elements.gustsText.style.display = 'none';
                 elements.directionArrow.textContent = '--';
                 elements.directionValue.textContent = '--°';
-                elements.sourceValue.textContent = translations[state.lang].manual;
+                elements.sourceValue.textContent = t('manual');
             }
         }
 
-        // Calculate kite size - IMPROVED ALGORITHM v2
-        // Combines kiteType (LEI/FOIL) with ridingStyle (PRO/AVERAGE/BEGINNER/SURF/HYDROFOIL)
+        // Render the kite size recommendation
         function calculateKiteSize() {
-            const t = translations[state.lang];
-            
-            // Base factors for LEI kites by riding style
-            const leiFactors = {
-                'PRO': 2.4,      // Experienced riders, efficient technique
-                'AVERAGE': 2.3,  // Standard all-around riding
-                'BEGINNER': 2.2, // Beginners need more power, larger board
-                'SURF': 2.0,     // Wave riding, directional board
-                'HYDROFOIL': 1.5 // Foil board - overrides kite type
-            };
-            
-            // Foil kite factors by riding style
-            // Foil kites (soft kites) are similar in size to LEI kites
-            // but slightly more efficient due to better aerodynamics
-            const foilFactors = {
-                'PRO': 2.2,      // Pro on foil kite - similar to LEI
-                'AVERAGE': 2.1,  // Average on foil kite
-                'BEGINNER': 2.0, // Beginner on foil kite
-                'SURF': 1.9,     // Surf with foil kite
-                'HYDROFOIL': 1.7 // Foil board + foil kite = very efficient
-            };
-            
-            // Reference weight is 75kg (average rider used by manufacturers)
-            // Weight correction: for every 10kg difference, adjust by ~3%
-            const referenceWeight = 75;
-            const weightDiff = state.weight - referenceWeight;
-            const weightCorrection = 1 + (weightDiff / 300); // ±3% per 10kg
-            
-            // Wind speed sanity limits
-            if (state.windSpeed < 5) {
+            const result = calcKiteSize({
+                weight: state.weight,
+                wind: state.windSpeed,
+                kiteType: state.kiteType,
+                ridingStyle: state.ridingStyle
+            });
+
+            if (result.status !== 'ok') {
+                const tooLittle = result.status === 'tooLittle';
                 elements.kiteValueRow.style.display = 'none';
-                elements.windWarning.textContent = t.tooLittleWind;
-                elements.windWarning.className = 'wind-warning too-little';
+                elements.windWarning.textContent = t(tooLittle ? 'tooLittleWind' : 'tooMuchWind');
+                elements.windWarning.className = `wind-warning ${tooLittle ? 'too-little' : 'too-much'}`;
                 elements.windWarning.style.display = 'block';
                 return;
             }
-            
-            if (state.windSpeed > 45) {
-                elements.kiteValueRow.style.display = 'none';
-                elements.windWarning.textContent = t.tooMuchWind;
-                elements.windWarning.className = 'wind-warning too-much';
-                elements.windWarning.style.display = 'block';
-                return;
-            }
-            
-            // Get base factor based on kite type and riding style
-            let factor;
-            if (state.kiteType === 'FOIL') {
-                factor = foilFactors[state.ridingStyle] || 1.3;
-            } else {
-                // LEI kite
-                factor = leiFactors[state.ridingStyle] || 2.3;
-            }
-            
-            // Apply weight correction (subtle adjustment)
-            factor = factor * weightCorrection;
-            
-            // Base calculation: (weight / wind) * factor
-            let rawSize = (state.weight / state.windSpeed) * factor;
-            
-            // Non-linear corrections based on real-world manufacturer data
-            // Light wind (<12 knots): reduce size slightly (modern kites are more efficient)
-            if (state.windSpeed < 12) {
-                rawSize = rawSize * 0.92; // 8% reduction for light wind
-            }
-            // Medium wind (12-20 knots): standard range, no correction needed
-            // High wind (>30 knots): safety buffer - suggest slightly larger kite
-            else if (state.windSpeed > 30) {
-                rawSize = rawSize * 1.05; // 5% increase for high wind safety
-            }
-            
-            // Apply reasonable limits
-            // Max 21m (largest production LEI kites)
-            // Min 3m (smallest production kites)
-            if (rawSize > 21) {
-                elements.kiteValueRow.style.display = 'none';
-                elements.windWarning.textContent = t.tooLittleWind;
-                elements.windWarning.className = 'wind-warning too-little';
-                elements.windWarning.style.display = 'block';
-                return;
-            }
-            
-            if (rawSize < 3) {
-                elements.kiteValueRow.style.display = 'none';
-                elements.windWarning.textContent = t.tooMuchWind;
-                elements.windWarning.className = 'wind-warning too-much';
-                elements.windWarning.style.display = 'block';
-                return;
-            }
-            
-            // Round to appropriate precision based on kite size
-            // Small kites (<7m): 0.5m increments (more precision needed)
-            // Large kites (>=7m): whole numbers (standard kite sizes)
-            let roundedSize;
-            if (rawSize < 7) {
-                roundedSize = Math.round(rawSize * 2) / 2; // 0.5 increments
-            } else {
-                roundedSize = Math.round(rawSize); // Whole numbers
-            }
-            
-            // Ensure we don't show impossible sizes
-            roundedSize = Math.max(3, Math.min(21, roundedSize));
-            
-            // Display result
+
             elements.windWarning.style.display = 'none';
             elements.kiteValueRow.style.display = 'flex';
-            
-            // Format: remove .0 for whole numbers
-            elements.kiteValue.textContent = roundedSize % 1 === 0 ? roundedSize.toFixed(0) : roundedSize.toFixed(1);
-            
-            // Update badge with kite type and style
-            const kiteLabels = {
-                'LEI': 'LEI',
-                'FOIL': 'FOIL'
-            };
-            elements.kiteTypeBadge.textContent = kiteLabels[state.kiteType] || 'LEI';
+            elements.kiteValue.textContent = result.size % 1 === 0 ? result.size.toFixed(0) : result.size.toFixed(1);
+            elements.kiteTypeBadge.textContent = state.kiteType === 'FOIL' ? 'FOIL' : 'LEI';
         }
 
         // Degrees to compass
@@ -1651,63 +1851,138 @@
             return directions[index];
         }
 
-        // Render spots list
+        // Render spots list (built with DOM APIs; spot names are user input)
         function renderSpotsList() {
-            elements.spotsList.innerHTML = '';
-            
+            elements.spotsList.replaceChildren();
+
+            if (state.spots.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'spots-empty';
+                empty.textContent = t('noSpots');
+                elements.spotsList.appendChild(empty);
+                return;
+            }
+
             state.spots.forEach((spot, index) => {
                 const item = document.createElement('div');
                 item.className = 'spot-item';
-                item.innerHTML = `
-                    <div class="spot-number">${index + 1}</div>
-                    <div class="spot-info">
-                        <div class="spot-name">${spot.name}</div>
-                        <div class="spot-coords">${spot.latitude.toFixed(4)}, ${spot.longitude.toFixed(4)}</div>
-                    </div>
-                    <span class="spot-arrow material-symbols-outlined">chevron_right</span>
-                `;
-                item.addEventListener('click', () => selectSpot(spot));
+
+                const main = document.createElement('div');
+                main.className = 'spot-main';
+                main.setAttribute('role', 'button');
+                main.tabIndex = 0;
+
+                const number = document.createElement('div');
+                number.className = 'spot-number';
+                number.textContent = index + 1;
+
+                const info = document.createElement('div');
+                info.className = 'spot-info';
+                const name = document.createElement('div');
+                name.className = 'spot-name';
+                name.textContent = spot.name;
+                const coords = document.createElement('div');
+                coords.className = 'spot-coords';
+                coords.textContent = `${spot.latitude.toFixed(4)}, ${spot.longitude.toFixed(4)}`;
+                info.append(name, coords);
+                main.append(number, info);
+                onActivate(main, () => {
+                    closeModal(elements.spotsModal);
+                    selectSpot(spot);
+                });
+
+                const editBtn = createIconButton('edit', t('edit'), 'spot-action', () => openSpotEditor(spot));
+                const deleteBtn = createIconButton('delete', t('delete'), 'spot-action delete', () => deleteSpot(spot));
+
+                item.append(main, editBtn, deleteBtn);
                 elements.spotsList.appendChild(item);
             });
+        }
+
+        function createIconButton(icon, label, className, handler) {
+            const btn = document.createElement('button');
+            btn.className = className;
+            btn.title = label;
+            btn.setAttribute('aria-label', label);
+            const span = document.createElement('span');
+            span.className = 'material-symbols-outlined';
+            span.textContent = icon;
+            btn.appendChild(span);
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handler();
+            });
+            return btn;
         }
 
         // Select spot
         function selectSpot(spot) {
             state.selectedSpot = spot;
-            state.isManualWind = false; // Reset manual flag when selecting a spot
+            state.isManualWind = false;
             elements.locationText.textContent = spot.name;
-            closeModal(elements.spotsModal);
+            saveSettings();
             fetchWindData(spot);
         }
 
-        // Add new spot
-        function addNewSpot() {
+        // Open add/edit spot modal (spot = null → new spot)
+        function openSpotEditor(spot) {
+            state.editingSpotId = spot ? spot.id : null;
+            elements.spotModalTitle.textContent = t(spot ? 'editSpot' : 'addSpot');
+            elements.spotNameInput.value = spot ? spot.name : '';
+            elements.latInput.value = spot ? spot.latitude : '';
+            elements.lonInput.value = spot ? spot.longitude : '';
+            closeModal(elements.spotsModal);
+            openModal(elements.addSpotModal);
+            elements.spotNameInput.focus();
+        }
+
+        // Save new or edited spot
+        function saveSpotFromForm() {
             const name = elements.spotNameInput.value.trim();
             const lat = parseFloat(elements.latInput.value);
             const lon = parseFloat(elements.lonInput.value);
 
             if (!name || isNaN(lat) || isNaN(lon)) {
-                showToast('Please fill all fields');
+                showToast(t('toastFillAll'));
+                return;
+            }
+            if (Math.abs(lat) > 90 || Math.abs(lon) > 180) {
+                showToast(t('toastInvalidCoords'));
                 return;
             }
 
-            const newSpot = {
-                id: Date.now().toString(),
-                name,
-                latitude: lat,
-                longitude: lon
-            };
-
-            state.spots.push(newSpot);
+            let spot;
+            const existing = state.editingSpotId && state.spots.find(s => s.id === state.editingSpotId);
+            if (existing) {
+                Object.assign(existing, { name, latitude: lat, longitude: lon });
+                spot = existing;
+            } else {
+                spot = { id: Date.now().toString(), name, latitude: lat, longitude: lon };
+                state.spots.push(spot);
+            }
             saveSpots();
-            
-            elements.spotNameInput.value = '';
-            elements.latInput.value = '';
-            elements.lonInput.value = '';
-            
+
             closeModal(elements.addSpotModal);
-            selectSpot(newSpot);
-            showToast('Spot added');
+            showToast(t(existing ? 'toastSpotUpdated' : 'toastSpotAdded'));
+            state.editingSpotId = null;
+            selectSpot(spot);
+        }
+
+        // Delete spot
+        function deleteSpot(spot) {
+            if (!confirm(t('confirmDelete').replace('{name}', spot.name))) return;
+
+            state.spots = state.spots.filter(s => s.id !== spot.id);
+            saveSpots();
+
+            if (state.selectedSpot && state.selectedSpot.id === spot.id) {
+                state.selectedSpot = null;
+                if (!state.isManualWind) elements.locationText.textContent = t('selectSpot');
+                saveSettings();
+            }
+
+            renderSpotsList();
+            showToast(t('toastSpotDeleted'));
         }
 
         // Set manual wind
@@ -1715,30 +1990,24 @@
             const speed = parseFloat(elements.manualSpeedInput.value);
             const gusts = parseFloat(elements.manualGustsInput.value);
 
-            if (isNaN(speed) || speed < 0) {
-                showToast('Please enter valid wind speed');
+            if (isNaN(speed) || speed < 0 || speed > 100) {
+                showToast(t('toastInvalidWind'));
                 return;
             }
 
             state.windSpeed = speed;
-            state.isManualWind = true; // Mark as manual
+            state.isManualWind = true;
             state.windData = {
                 speed: speed,
-                gusts: isNaN(gusts) ? speed + 5 : gusts,
-                direction: 0,
+                gusts: isNaN(gusts) ? null : gusts,
+                direction: undefined,
                 timestamp: new Date(),
                 source: 'manual'
             };
 
-            // Update slider
-            const percent = Math.min((speed / 40) * 100, 100);
-            elements.windFill.style.width = `${percent}%`;
-            elements.windThumb.style.left = `${percent}%`;
-            elements.windSliderValue.textContent = speed.toFixed(1);
-
-            // Update location text to show "Manual"
-            const t = translations[state.lang];
-            elements.locationText.textContent = t.manual;
+            windSlider.setValue(Math.min(WIND_RANGE.max, speed));
+            elements.windSliderValue.textContent = Math.round(speed);
+            elements.locationText.textContent = t('manual');
 
             elements.manualSpeedInput.value = '';
             elements.manualGustsInput.value = '';
@@ -1746,7 +2015,7 @@
             closeModal(elements.manualWindModal);
             updateWindDisplay();
             calculateKiteSize();
-            showToast('Wind updated');
+            showToast(t('toastWindUpdated'));
         }
 
         // Modal helpers
@@ -1757,56 +2026,46 @@
 
         function closeModal(modal) {
             modal.classList.remove('active');
-            document.body.style.overflow = '';
+            if (!document.querySelector('.modal-overlay.active')) {
+                document.body.style.overflow = '';
+            }
         }
 
-        // Update UI text
+        // Update all translated texts
         function updateUI() {
-            const t = translations[state.lang];
-            
-            // Only update location text if not in manual wind mode
-            if (!state.isManualWind) {
-                elements.locationText.textContent = state.selectedSpot ? state.selectedSpot.name : t.selectSpot;
+            document.documentElement.lang = state.lang;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
+            document.querySelectorAll('[data-i18n-title]').forEach(el => el.title = t(el.dataset.i18nTitle));
+            document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+
+            // Edit modal title depends on mode
+            elements.spotModalTitle.textContent = t(state.editingSpotId ? 'editSpot' : 'addSpot');
+
+            if (state.isManualWind) {
+                elements.locationText.textContent = t('manual');
+            } else if (state.selectedSpot) {
+                if (state.selectedSpot.id === 'gps') state.selectedSpot.name = t('currentLocation');
+                elements.locationText.textContent = state.selectedSpot.name;
+            } else {
+                elements.locationText.textContent = t('selectSpot');
             }
-            elements.gpsButton.innerHTML = `<span class="material-symbols-outlined">my_location</span><span>${t.useGps}</span>`;
-            elements.spotsButton.querySelector('.spots-text').textContent = t.manageSpots;
-            
-            // Update slider labels
-            document.querySelectorAll('.slider-label').forEach((el, i) => {
-                if (i === 0) el.textContent = t.weight;
-                if (i === 1) el.textContent = t.windSpeed;
-            });
 
-            // Update kite type and riding style labels
-            document.querySelectorAll('[data-i18n="kiteType"]').forEach(el => el.textContent = t.kiteType);
-            document.querySelectorAll('[data-i18n="ridingStyle"]').forEach(el => el.textContent = t.ridingStyle);
-
-            // Update kite type buttons
-            elements.kiteTypeBtns.forEach(btn => {
-                const kite = btn.dataset.kite;
-                if (kite === 'LEI') btn.textContent = t.lei;
-                if (kite === 'FOIL') btn.textContent = t.foil;
-            });
-
-            // Update riding style buttons
-            elements.ridingStyleBtns.forEach(btn => {
-                const style = btn.dataset.style;
-                if (style === 'PRO') btn.textContent = t.pro;
-                if (style === 'AVERAGE') btn.textContent = t.average;
-                if (style === 'BEGINNER') btn.textContent = t.beginner;
-                if (style === 'SURF') btn.textContent = t.surf;
-                if (style === 'HYDROFOIL') btn.textContent = t.hydrofoil;
-            });
+            if (!elements.gpsButton.disabled) setGpsButton(false);
+            if (elements.spotsModal.classList.contains('active')) renderSpotsList();
 
             updateWindDisplay();
             calculateKiteSize();
         }
 
         // Toast
+        let toastTimer;
         function showToast(message) {
             elements.toast.textContent = message;
             elements.toast.classList.add('show');
-            setTimeout(() => {
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
                 elements.toast.classList.remove('show');
             }, 3000);
         }
